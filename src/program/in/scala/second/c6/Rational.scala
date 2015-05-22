@@ -44,6 +44,7 @@ object debug extends App{
   implicit def intToRational(x : Int) : Rational = new Rational(x)  //Must define it HERE! to make it in scope so can work.
   //need implicit conversion heres
   println(1 + r2)
-  
   println(10 + 1 + r2)
+  
+  println(100+100)
 }
