@@ -1,6 +1,6 @@
 package program.in.scala.second.c6
 
-class Rational (n: Int, d: Int){
+class Rational (n: Int, d: Int) extends Ordered[Rational]{
   
   //add filed, so n & d can be called.
   val number: Int = n
@@ -25,6 +25,7 @@ class Rational (n: Int, d: Int){
   //function overload
   def + (n: Int) : Rational = new Rational(this.number + n * this.denom, this.denom)
   
+  def compare(that: Rational) = (this.number * that.denom - that.number * this.denom)
 }
 
 object debug extends App{
@@ -47,4 +48,9 @@ object debug extends App{
   println(10 + 1 + r2)
   
   println(100+100)
+  
+  val r4 = new Rational(2,3)
+  println(r >= r4)
+  println(r <= r4)
+  println(r == r4)
 }
