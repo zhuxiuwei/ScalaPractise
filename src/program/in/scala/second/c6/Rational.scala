@@ -29,6 +29,7 @@ class Rational (n: Int, d: Int) extends Ordered[Rational]{
 }
 
 object debug extends App{
+  
   val r = new Rational(2,3)
   println(r)
   

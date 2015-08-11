@@ -5,5 +5,9 @@ object Freetest {
     f1(1,2)
     println(10)
     Console println 10
+    
+    val s = SimpleJava.javaPrint()
+    println("string from java class: " + s)
+
   }
 }
