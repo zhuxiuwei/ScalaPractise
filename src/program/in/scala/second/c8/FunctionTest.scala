@@ -19,7 +19,7 @@ object FunctionTest extends App{
   def sum2(a: Int, b: Int, c: Int) = a + b + c     //def sum2(a: Int, b: Int, c: Int): Int
   val b = sum2 _    // val b: (Int, Int, Int) => Int
   println(b(1,2,3))  
-  println(b.getClass().getName() + "," + b.getClass.getAnnotatedSuperclass())
+  //println(b.getClass().getName() + "," + b.getClass.getAnnotatedSuperclass())
   for(  m <- b.getClass().getMethods())
       print(m.getName() + ", ")
   val b2 = sum(1, _:Int, 3)  //val b2: Int => Int
