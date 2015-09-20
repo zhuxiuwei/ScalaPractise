@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 /**
  * @author xiuzhu
- * 131228
+ * Adjust file names to modifiedTime.
  */
 public class RenameByModifiedTime {
  public String renameType = "1";	//1 photo, 2 video
