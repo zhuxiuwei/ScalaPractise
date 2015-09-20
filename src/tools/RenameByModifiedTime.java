@@ -1,17 +1,15 @@
-package tools;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 /**
- * 批量修改文件名称为file modified time。
  * @author xiuzhu
  * 131228
  */
 public class RenameByModifiedTime {
- 
- private HashMap<String, Integer> existedNames = new HashMap<String, Integer>();	//保存已经生成过的文件名。防止重名。
+ public String renameType = "1";	//1 photo, 2 video
+ private HashMap<String, Integer> existedNames = new HashMap<String, Integer>();	
  
  public void rename(File sourceFolder){
   if (sourceFolder.isDirectory()){
@@ -23,10 +21,13 @@ public class RenameByModifiedTime {
      String postfix = name.substring(name.lastIndexOf("."));
      try {
       Date modified = new Date(f.lastModified());
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+      SimpleDateFormat sdf = null;
+	  if(renameType.equals("2"))
+		sdf = new SimpleDateFormat("yyyyMMdd_HHmm_");	//videos
+	  if(renameType.equals("1"))
+		sdf = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");	//pictures
       String newName = sdf.format(modified);
       
-      //判断重复名字
       if(!existedNames.containsKey(newName))
     	  existedNames.put(newName, 1);
       else{
@@ -35,7 +36,7 @@ public class RenameByModifiedTime {
     	  newName = newName + "_" + count;
       }
       
-      System.out.println(newName);
+      System.out.println(name + " -> " + newName);
       f.renameTo(new File(sourceFolder.getAbsolutePath() + "\\" + newName + postfix));
      } catch (Exception e) {
       e.printStackTrace();
@@ -51,10 +52,15 @@ public class RenameByModifiedTime {
   * @param args
   */
  public static void main(String[] args) {
-  // path是待修改名字的照片所在的目录
-  String path = "D:\\aaa";
+  if(args.length == 0){
+	  System.out.println("Input 1 or 2. 1: picture or Wechat video, 2: video");
+	  return;
+  }
+  String path = "E:\\rename";
   File sourceFolder = new File(path);
-  new RenameByModifiedTime().rename(sourceFolder);
+  RenameByModifiedTime r = new RenameByModifiedTime();
+  r.renameType = args[0];
+  r.rename(sourceFolder);
  }
 
 }
