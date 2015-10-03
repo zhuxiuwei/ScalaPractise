@@ -83,7 +83,7 @@ public class HandleDuplicate {
 					dupMap.put(key, name);
 				else{	//duplicate file, move to duplicated folder
 					String v = dupMap.get(key);
-					v = v + " | " + name;
+					v = v + "," + name;
 					dupMap.put(key, v);
 					moveFile(file, DUPLICATEDPATH);
 				}
@@ -117,9 +117,9 @@ public class HandleDuplicate {
 			}
 			else{	//duplicate file, move to duplicated folder
 				String v = dupMap2.get(key);
-				if(!v.contains(" | "))
+				if(!v.contains(","))
 					firstDuplicatedNames.add(new File(this.path + File.separator + v));
-				v = v + " | " + name;
+				v = v + "," + name;
 				dupMap2.put(key, v);
 				moveFile(file, DUPLICATEDPATH2);
 			}
@@ -163,7 +163,7 @@ public class HandleDuplicate {
 			fw.write( "Date" + "\t\t\t" + "Size" + "\t\t" + "FileNames\r\n");  
 			for(String key: keySet){
 				String v = dupMap.get(key);
-				int size = v.split(" | ").length;
+				int size = v.split(",").length;
 				if(size > 1)
 					fw.write( key.split(":")[0] + "\t\t" + key.split(":")[1] + "\t\t" + dupMap.get(key) + "\r\n");  
 			}
@@ -178,11 +178,12 @@ public class HandleDuplicate {
 	public void logDuplications2(Map<Long, String> dupMap){
 		try {
 			Set<Long> keySet = dupMap.keySet();
-			fw.write( "----------------------------------------------------");  
+			fw.write( "\r\n----------------------------------------------------\r\n");  
 			fw.write( "Size" + "\t\t" + "FileNames\r\n");  
 			for(Long key: keySet){
 				String v = dupMap.get(key);
-				int size = v.split(" | ").length;
+				int size = v.split(",").length;
+				String[]  sssss = v.split(",");
 				if(size > 1)
 					fw.write( key + "\t\t" + dupMap.get(key) + "\r\n");  
 			}
