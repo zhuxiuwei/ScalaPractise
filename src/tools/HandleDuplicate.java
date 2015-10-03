@@ -22,7 +22,7 @@ public class HandleDuplicate {
 	private String DUPLICATEDPATH = "";
 	private String LOGPATH = "";
 	
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	//NOTICE: Just need to match to date. No need to specify time(hour, minute, second)
 	
 	//Constructor
 	public HandleDuplicate(String filePath){
