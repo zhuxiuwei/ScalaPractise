@@ -1,5 +1,6 @@
 package tools;
 
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,5 +70,4 @@ public class RenameByModifiedTime {
 		RenameByModifiedTime r = new RenameByModifiedTime(args[0], args[1]);
 		r.rename();
 	}
-
 }
