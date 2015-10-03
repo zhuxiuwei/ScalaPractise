@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 /**
  * Get rid of duplicated wechat videos. How to judge duplicate:
  * If videos of the same day get the same file size, then consider them to be duplicate.
@@ -19,8 +20,10 @@ public class HandleDuplicate {
 
 	public String path = "";
 	private String NOTVIDEOPATH = "";
-	private String DUPLICATEDPATH = "";
+	private String DUPLICATEDPATH = "";	//duplicate files of same day
+	private String DUPLICATEDPATH2 = "";	//duplicate files of different days
 	private String LOGPATH = "";
+	private FileWriter fw = null;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	//NOTICE: Just need to match to date. No need to specify time(hour, minute, second)
 	
@@ -30,24 +33,36 @@ public class HandleDuplicate {
 		this.path = filePath;
 		this.NOTVIDEOPATH = path + File.separator + "notvideo";
 		this.DUPLICATEDPATH =  path + File.separator + "duplicated";
+		this.DUPLICATEDPATH2 =  path + File.separator + "duplicated2";
 		this.LOGPATH = path + File.separator + "log";
 		File notVideoFolder = new File(NOTVIDEOPATH);
 		File dupeFolder = new File(DUPLICATEDPATH);
+		File dupeFolder2 = new File(DUPLICATEDPATH2);
 		File logFolder = new File(LOGPATH);
 		if(!notVideoFolder.exists())
 			notVideoFolder.mkdirs();
 		if(!dupeFolder.exists())
 			dupeFolder.mkdirs();
+		if(!dupeFolder2.exists())
+			dupeFolder2.mkdirs();
 		if(!logFolder.exists())
 			logFolder.mkdirs();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+			fw = new FileWriter(new File(this.LOGPATH + File.separator + sdf.format(new Date()) + ".log"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	//Handle dupliacates of same day
 	public void handle(){
 		System.out.println("*** Reminder: Execute RenameByModifiedTime.java before execute this. ***");
 		File sourceFolder = new File(path);
 		if (sourceFolder.isDirectory()) {
 			File files[] = sourceFolder.listFiles();
-			Map<String, String> dupMap = new HashMap<String, String>();
+			Map<String, String> dupMap = new TreeMap<String, String>();
 			for (File file : files) {
 				if(file.isDirectory())
 					continue;
@@ -82,6 +97,43 @@ public class HandleDuplicate {
 		}
 	}
 	
+	//Handle duplicates of different days
+	public void handleLevel2(){
+		System.out.println("*** Handle duplicates from different days ***");
+		File sourceFolder = new File(path);
+		File files[] = sourceFolder.listFiles();
+		Map<Long, String> dupMap2 = new TreeMap<Long, String>();
+		Set<File> firstDuplicatedNames  = new HashSet<File>();
+		for (File file : files) {
+			if(file.isDirectory())
+				continue;
+			
+			String name = file.getName();
+			
+			//handle duplicate videos
+			Long key = file.length();
+			if(!dupMap2.containsKey(key)){
+				dupMap2.put(key, name);
+			}
+			else{	//duplicate file, move to duplicated folder
+				String v = dupMap2.get(key);
+				if(!v.contains(" | "))
+					firstDuplicatedNames.add(new File(this.path + File.separator + v));
+				v = v + " | " + name;
+				dupMap2.put(key, v);
+				moveFile(file, DUPLICATEDPATH2);
+			}
+		}
+		
+		//move files in firstDuplicatedNames to DUPLICATEDPATH2 to.
+		//This is to facility confirmation if it's really duplicated later.
+		for (File file : firstDuplicatedNames) 
+			moveFile(file, DUPLICATEDPATH2);
+		
+		//log updates
+		logDuplications2(dupMap2);
+	}
+	
 	//Extract date from filename.
 	private String getDayFromFileName(String Filename){
 		Date date = null;
@@ -107,9 +159,6 @@ public class HandleDuplicate {
 	//Log contents in dupMap
 	public void logDuplications(Map<String, String> dupMap){
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-			String logName = this.LOGPATH + File.separator + sdf.format(new Date()) + ".log";
-			FileWriter fw = new FileWriter(new File(logName));
 			Set<String> keySet = dupMap.keySet();
 			fw.write( "Date" + "\t\t\t" + "Size" + "\t\t" + "FileNames\r\n");  
 			for(String key: keySet){
@@ -120,12 +169,30 @@ public class HandleDuplicate {
 			}
 			
 			fw.flush();
-			fw.close();
 		} catch (IOException e) {
 			System.out.println("Exception when logging duplicated files:" + e.getMessage());
 		}
 	}
 	
+	//Log contents in dupMap2
+	public void logDuplications2(Map<Long, String> dupMap){
+		try {
+			Set<Long> keySet = dupMap.keySet();
+			fw.write( "----------------------------------------------------");  
+			fw.write( "Size" + "\t\t" + "FileNames\r\n");  
+			for(Long key: keySet){
+				String v = dupMap.get(key);
+				int size = v.split(" | ").length;
+				if(size > 1)
+					fw.write( key + "\t\t" + dupMap.get(key) + "\r\n");  
+			}
+			
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			System.out.println("Exception when logging duplicated files:" + e.getMessage());
+		}
+	}
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("Usage: java HandleDuplicate <path>");
@@ -133,6 +200,7 @@ public class HandleDuplicate {
 		}
 		HandleDuplicate r = new HandleDuplicate(args[0]);
 		r.handle();
+		r.handleLevel2();
 	}
 
 }
