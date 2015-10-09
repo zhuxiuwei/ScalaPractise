@@ -1,13 +1,12 @@
 package tools;
 
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
- * @author xiuzhu 131228
+ * @author xiuzhu 201509
  */
 public class RenameByModifiedTime {
 	private String renameType = "1"; // 1 photo or Wechat video, 2 big video

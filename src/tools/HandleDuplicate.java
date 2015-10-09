@@ -51,12 +51,11 @@ public class HandleDuplicate {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
 			fw = new FileWriter(new File(this.LOGPATH + File.separator + sdf.format(new Date()) + ".log"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	//Handle dupliacates of same day
+	//Handle duplicates of same day
 	public void handle(){
 		System.out.println("*** Reminder: Execute RenameByModifiedTime.java before execute this. ***");
 		File sourceFolder = new File(path);
@@ -93,7 +92,7 @@ public class HandleDuplicate {
 			logDuplications(dupMap);
 			
 		}else{
-			System.out.println(path + "不是合法的目录！");
+			System.out.println(path + "is not a legal directory path!");
 		}
 	}
 	
@@ -140,7 +139,7 @@ public class HandleDuplicate {
 		try {
 			date = sdf.parse(Filename);
 		} catch (ParseException e) {
-			System.out.println("Exception when convert date format: " + Filename);
+			System.out.println("!!!Exception when convert date format: " + Filename);
 			return "";
 		}
 		String year = (1900 + date.getYear()) + "";
